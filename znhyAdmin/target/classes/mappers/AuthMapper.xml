@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.auxing.znhy.mapper.AuthMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.auxing.znhy.entity.Auth">
+        <id column="ID" property="id" />
+        <result column="AUTH_NAME" property="authName" />
+        <result column="SUPER_AUTH" property="superAuth" />
+        <result column="URL" property="url" />
+        <result column="SORT" property="sort" />
+        <result column="DES" property="des" />
+        <result column="ICON" property="icon" />
+        <result column="AUTH_ID" property="authId" />
+        <result column="PARENT_ID" property="parentId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID, AUTH_NAME, SUPER_AUTH, URL, SORT, DES, ICON, AUTH_ID, PARENT_ID
+    </sql>
+
+    <select id="getAuthBindListById" resultMap="BaseResultMap">
+        select DISTINCT AUTH_ID
+          from roleauth
+            where 1=1
+        <if test="modId != null and modId != '' ">
+            and ROLE_ID in (SELECT ROLE_ID FROM userrole WHERE USER_ID = #{modId})
+        </if>
+    </select>
+
+    <select id="getBindLevelOneList" resultMap="BaseResultMap">
+        SELECT * FROM auth a WHERE a.PARENT_ID ='0' AND a.AUTH_ID in (
+          select DISTINCT AUTH_ID
+          from roleauth
+          where 1=1
+          <if test="modId != null and modId != '' ">
+              and ROLE_ID in (SELECT ROLE_ID FROM userrole WHERE USER_ID = #{modId})
+          </if>
+        )
+    </select>
+
+    <select id="getBindLevelOtherList" resultMap="BaseResultMap">
+        SELECT AUTH_ID FROM auth a WHERE a.PARENT_ID not in ('0',null) AND a.AUTH_ID in (
+        select DISTINCT AUTH_ID
+        from roleauth
+        where 1=1
+        <if test="modId != null and modId != '' ">
+            and ROLE_ID in (SELECT ROLE_ID FROM userrole WHERE USER_ID = #{modId})
+        </if>
+        )
+    </select>
+
+    <select id="findTreeDetails" parameterType="String" resultType="ZTreeNode">
+		SELECT a.AUTH_ID id,a.AUTH_NAME name,a.PARENT_ID pid FROM  auth a
+	</select>
+
+</mapper>

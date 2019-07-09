@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.auxing.znhy.mapper.ChannelMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.auxing.znhy.entity.Channel">
+        <id column="ID" property="id" />
+        <result column="TELEVISION_ID" property="televisionId" />
+        <result column="DEVICE_NAME" property="deviceName" />
+        <result column="CHANNEL_ID" property="channelId" />
+        <result column="CREATOR" property="creator" />
+        <result column="CREAT_TIME" property="creatTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="LINE" property="line" />
+        <result column="COL" property="col" />
+        <result column="ALIAS" property="alias" />
+        <result column="OCCUPY" property="occupy" />
+        <result column="CONF_ID" property="confId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID, TELEVISION_ID, DEVICE_NAME, CHANNEL_ID, CREATOR, CREAT_TIME, UPDATE_TIME, YLZD1, YLZD2, YLZD3
+    </sql>
+	
+	<update id="updateByConfId" parameterType="String">
+		UPDATE channel
+			SET ALIAS = NULL,
+		 	OCCUPY = 0,
+		 	CONF_ID = NULL
+		WHERE
+			CONF_ID = #{confId}
+	</update>
+	
+	<update id="updateByConfIdHdu" parameterType="String">
+		UPDATE channel
+			SET ALIAS = NULL,
+		 	OCCUPY = 0,
+		 	CONF_ID = NULL
+		WHERE
+			CONF_ID = #{confId}
+		AND
+			CHANNEL_ID = #{hduId}
+	</update>
+	
+	<update id="empty" parameterType="String">
+		UPDATE channel
+			SET ALIAS = NULL,
+		 	OCCUPY = 0,
+		 	CONF_ID = NULL
+		WHERE
+			CONF_ID = #{confId}
+	</update>
+	
+	
+    <select id="getByTvId" parameterType="String" resultMap="BaseResultMap">
+        select * from channel where TELEVISION_ID = #{televisionId}
+    </select>
+
+</mapper>

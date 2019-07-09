@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.auxing.znhy.mapper.MeetMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="Meet">
+        <id column="ID" property="id" />
+        <result column="RESOURCES_ID" property="resourcesId" />
+        <result column="DURATION" property="duration" />
+        <result column="THEME" property="theme" />
+        <result column="MSG" property="msg" />
+        <result column="MEET_NUMBER" property="meetNumber" />
+        <result column="START_TIME" property="startTime" />
+		<result column="SUS_HOUR" property="susHour" />
+		<result column="SUS_MINUTE" property="susMinute" />
+        <result column="END_TIME" property="endTime" />
+        <result column="STATUS" property="status" />
+        <result column="CREATE_ID" property="createId" />
+        <result column="CREATE_NAME" property="createName" />
+        <result column="BITRATE" property="bitrate" />
+        <result column="RESOURCES_NAME" property="resourcesName" />
+        <result column="E164" property="e164" />
+        <result column="JOIN_MT" property="joinMt" />
+        <result column="RESOLUTION" property="resolution" />
+        <result column="FRAME" property="frame" />
+        <result column="MEET_ROOM" property="meetRoom" />
+        <result column="USER_DOMAIN" property="userDomain" />
+        <result column="MAX_JOIN_MT" property="maxJoinMt" />
+        <result column="MEET_RANGE" property="meetRange" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name
+    </sql>
+	
+	<select id="selectTotalCount" parameterType="Map" resultType="Long">
+		SELECT COUNT(1) FROM meet m
+		<if test="meetRoom != null and meetRoom != ''"> LEFT JOIN meetroom mr ON m.MEET_ROOM = mr.ID</if>
+		<where>
+		    1 = 1
+			<if test="meet.resourcesName != null and meet.resourcesName != ''">AND m.RESOURCES_NAME like CONCAT('%',#{meet.resourcesName},'%')</if>
+			<if test="meet.createId != null and meet.createId != ''">AND m.CREATE_ID = #{meet.createId}</if>
+			<if test="meet.userDomain != null and meet.userDomain != ''">AND m.USER_DOMAIN = #{meet.userDomain}</if>
+			<if test="meetRoom != null and meetRoom != ''">AND mr.NAME like CONCAT('%',#{meetRoom},'%')</if>
+		</where>
+	</select>
+	
+	<select id="page" parameterType="Map" resultMap="BaseResultMap">
+		SELECT m.THEME,m.RESOURCES_NAME,m.CREATE_NAME,mr.NAME AS MEET_ROOM,m.DURATION,m.STATUS,m.BITRATE,m.RESOLUTION,m.MAX_JOIN_MT,m.MEET_RANGE,m.FRAME
+		FROM 
+			meet m	
+		LEFT JOIN meetroom mr ON m.MEET_ROOM = mr.ID
+		<where>
+			1 = 1
+			<if test="meet.resourcesName != null and meet.resourcesName != ''">AND m.RESOURCES_NAME like CONCAT('%',#{meet.resourcesName},'%')</if>
+			<if test="meet.createId != null and meet.createId != ''">AND m.CREATE_ID = #{meet.createId}</if>
+			<if test="meet.userDomain != null and meet.userDomain != ''">AND m.USER_DOMAIN = #{meet.userDomain}</if>
+			<if test="meetRoom != null and meetRoom != ''">AND mr.NAME like CONCAT('%',#{meetRoom},'%')</if>
+		</where>
+		ORDER BY  m.STATUS DESC
+	</select>
+	
+	<select id="getMeetListById" resultType="String" resultMap="BaseResultMap">
+		SELECT m.E164,m.JOIN_MT,m.THEME,m.RESOURCES_NAME,m.CREATE_NAME,mr.NAME AS MEET_ROOM,m.DURATION,m.STATUS,m.BITRATE,m.RESOLUTION,m.MAX_JOIN_MT,m.MEET_RANGE,m.FRAME
+		FROM 
+			meet m	
+		LEFT JOIN meetroom mr ON m.MEET_ROOM = mr.ID
+		WHERE m.CREATE_ID = #{userId}
+		AND m.STATUS = 1
+	</select>
+	
+	<select id="getMeetListByStatus"  resultMap="BaseResultMap">
+		SELECT *
+		FROM 
+			meet m	
+		WHERE m.STATUS = 1
+	</select>
+	
+	<insert id="saveMeet" parameterType="Meet" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO meet(
+			DURATION,
+			THEME,
+			MSG,
+			MEET_NUMBER,
+			START_TIME,
+			END_TIME,
+			SUS_HOUR,
+			SUS_MINUTE,
+			STATUS,
+			CREATE_ID,
+			CREATE_NAME,
+			BITRATE,
+			RESOURCES_NAME,
+			E164,
+			JOIN_MT,
+			RESOLUTION,
+			FRAME,
+			MEET_ROOM,
+			USER_DOMAIN,
+			MAX_JOIN_MT,
+			MEET_RANGE
+		) 
+		VALUES (
+			#{duration},
+			#{theme},
+			#{msg},
+			#{meetNumber},
+			#{startTime},
+			#{endTime},
+			#{susHour},
+			#{susMinute},
+			#{status},
+			#{createId},
+			#{createName},
+			#{bitrate},
+			#{resourcesName},
+			#{e164},
+			#{joinMt},
+			#{resolution},
+			#{frame},
+			#{meetRoom},
+			#{userDomain},
+			#{maxJoinMt},
+			#{meetRange}
+		)
+	</insert>
+	
+	<insert id="saveMeetUser" parameterType="Map">
+		insert into meetuser(USER_ID, MEET_ID)
+		values
+		<foreach collection="list" item="uid" index="index" separator=",">
+			(#{uid}, #{id})
+		</foreach>
+	</insert>
+
+	<select id="getMrUseDetails" resultMap="BaseResultMap">
+		select * from meet m
+			where
+				SUBSTR(m.START_TIME FROM 1 FOR 4) = #{year}
+			AND SUBSTR(m.START_TIME FROM 6 FOR 2) = #{month}
+			AND m.MEET_ROOM IN (
+				<foreach collection="list" item="room" index="index" separator=",">
+					#{room.id}
+				</foreach>
+			)
+	</select>
+	
+	<select id="getMrLists" resultMap="BaseResultMap">
+		select m.THEME,m.RESOURCES_NAME,m.START_TIME,m.SUS_HOUR,m.SUS_MINUTE,m.MEET_NUMBER,m.CREATE_NAME,room.NAME AS MEET_ROOM,m.DURATION,m.STATUS,m.BITRATE,m.RESOLUTION,m.MAX_JOIN_MT,m.MEET_RANGE,m.FRAME from meet m
+			LEFT JOIN  meetroom room  on m.MEET_ROOM = room.id
+			where  m.START_TIME >= #{startTime} 
+			AND  #{endTime} >= m.START_TIME
+			AND m.MEET_ROOM IN (
+				<foreach collection="list" item="room" index="index" separator=",">
+					#{room.id}
+				</foreach>
+			)
+	</select>
+
+	<select id="getDetailsByMeetNumber" resultMap="BaseResultMap">
+		select * from meet
+			where MEET_NUMBER = #{meetId}
+	</select>
+	<select id="selectByMeetNum" resultMap="BaseResultMap">
+		select m.THEME,m.RESOURCES_NAME,m.MEET_NUMBER,m.CREATE_NAME,room.NAME AS MEET_ROOM,m.DURATION,m.STATUS,m.BITRATE,m.RESOLUTION,m.MAX_JOIN_MT,m.MEET_RANGE,m.FRAME
+		 from MEET m LEFT JOIN  meetroom room  on m.MEET_ROOM = room.id
+			where m.MEET_NUMBER = #{meetId} and m.STATUS = '1'
+	</select>
+	
+	<update id="updateStatus" parameterType="Map">
+		UPDATE meet 
+		SET STATUS = #{status}
+		WHERE ID = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.auxing.znhy.mapper.TemplateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="Template">
+        <id column="T_ID" property="tId" />
+        <result column="T_NAME" property="tName" />
+        <result column="T_PASSWORD" property="tPassword" />
+        <result column="SPEAKER" property="speaker" />
+        <result column="CHAIR_MAN" property="chairMan" />
+        <result column="AUTO_END" property="autoEnd" />
+        <result column="CREATE_ID" property="createId" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="DURATION" property="duration" />
+        <result column="DEPARTMENT_ID" property="departmentId" />
+        <result column="CREATE_NAME" property="createName" />
+        
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        T_ID, NAME, PASSWORD, ENCRYPTED_TYPE, CLOSE_CONF, SAFE_CONF, SPEAKER, CHAIR_MAN, AUTO_END, CREATE_ID, CREATE_TIME, UPDATE_TIME, DURATION
+    </sql>
+	
+	
+	<!-- <select id="selectTotalCount" parameterType="Map" resultType="Long">
+		SELECT COUNT(1) 
+		FROM 
+			template
+		WHERE DEPARTMENT_ID IN (
+		<foreach collection="list" item="ZTreeNode" index="index" separator=",">
+			#{ZTreeNode.id}
+		</foreach>
+		)
+	</select> -->
+	
+	<select id="selectTotalCount" parameterType="Map" resultType="Long">
+		SELECT COUNT(1) 
+		FROM 
+			template
+		WHERE 
+			DEPARTMENT_ID = #{template.departmentId}
+		
+	</select>
+	
+	<!-- <select id="page" parameterType="Map" resultMap="BaseResultMap">
+		SELECT
+			t.T_ID, t.T_NAME, t.T_PASSWORD, t.SPEAKER, t.CHAIR_MAN,  t.CREATE_ID, t.CREATE_TIME, t.UPDATE_TIME, t.DURATION,t.DEPARTMENT_ID,t.CREATE_NAME
+		FROM
+			template t
+		WHERE t.DEPARTMENT_ID IN (
+		<foreach collection="list" item="ZTreeNode" index="index" separator=",">
+			#{ZTreeNode.id}
+		</foreach>
+		)
+		ORDER BY t.CREATE_TIME DESC
+	</select> -->
+	
+	
+	<select id="page" parameterType="Map" resultMap="BaseResultMap">
+		SELECT
+		    t.T_ID, t.T_NAME, t.T_PASSWORD, t.SPEAKER, t.CHAIR_MAN,  t.CREATE_ID, t.CREATE_TIME, t.UPDATE_TIME, t.DURATION,dep.DEPARTMENT_NAME AS DEPARTMENT_ID,t.CREATE_NAME
+		FROM
+			template t
+		LEFT JOIN
+			department dep
+		ON
+			t.DEPARTMENT_ID = dep.DEPARTMENT_MOID
+		WHERE 
+			t.DEPARTMENT_ID = #{template.departmentId}
+		   ORDER BY t.CREATE_TIME DESC
+	</select>
+	
+	<select id="getTemplateById" parameterType="Template" resultMap="BaseResultMap">
+		SELECT
+			t.T_ID, t.T_NAME, t.T_PASSWORD, t.SPEAKER, t.CHAIR_MAN, t.AUTO_END, t.CREATE_ID, t.CREATE_TIME, t.UPDATE_TIME, t.DURATION
+		FROM
+			template t
+		WHERE
+			 t.T_ID = #{id}
+	</select>
+	
+	<select id="findUserIds" parameterType="Integer" resultType="String">
+		SELECT u.MOID
+		FROM 
+			template t,
+			USER u,
+			templateuser tu
+		WHERE t.T_ID = tu.TEMPLATE_ID
+		AND u.MOID = tu.USER_ID
+		AND t.T_ID = #{id}
+	</select>
+	
+	<select id="findListByDep" parameterType="String" resultMap="BaseResultMap">
+		SELECT
+			t.T_ID, t.T_NAME, t.T_PASSWORD, t.SPEAKER, t.CHAIR_MAN,  t.CREATE_ID, t.CREATE_TIME, t.UPDATE_TIME, t.DURATION,t.DEPARTMENT_ID,t.CREATE_NAME
+		FROM
+			template t
+		WHERE 
+		 	t.DEPARTMENT_ID IN (
+		<foreach collection="list" item="ZTreeNode" index="index" separator=",">
+			#{ZTreeNode.id}
+		</foreach>
+		)
+	</select>
+	
+	<select id="templateLists" parameterType="String" resultMap="BaseResultMap">
+		SELECT
+			 t.T_ID, t.T_NAME, t.T_PASSWORD, t.SPEAKER, t.CHAIR_MAN,  t.CREATE_ID, t.CREATE_TIME, t.UPDATE_TIME,t.DURATION,t.DEPARTMENT_ID,t.CREATE_NAME
+		FROM
+			template t
+		<where>
+			<if test="departmentId != null and departmentId != ''">t.DEPARTMENT_ID = #{departmentId}</if>
+		</where>
+		ORDER BY t.CREATE_TIME DESC
+	</select>
+	
+	<select id="getUsersById" parameterType="java.lang.Integer" resultType="TemplateUser">
+		SELECT * FROM templateuser WHERE TEMPLATE_ID = #{id}
+	</select>
+	
+	
+	<insert id="saveTemplate" parameterType="Template" useGeneratedKeys="true" keyProperty="tId">
+		INSERT INTO template(
+			T_NAME,
+			T_PASSWORD,
+			SPEAKER,
+			CHAIR_MAN,
+			AUTO_END,
+			CREATE_ID,
+			CREATE_TIME,
+			UPDATE_TIME,
+			DURATION,
+			DEPARTMENT_ID,
+			CREATE_NAME
+		) 
+		VALUES (
+			#{tName},
+			#{tPassword},
+			#{speaker},
+			#{chairMan},
+			#{autoEnd},
+			#{createId},
+			#{createTime},
+			#{updateTime},
+			#{duration},
+			#{departmentId},
+			#{createName}
+		)
+	</insert>
+	
+	<insert id="saveTemplateUser" parameterType="java.util.Map">
+		insert into templateuser(USER_ID, TEMPLATE_ID,TYPE)
+		values
+		<foreach collection="list" item="uid" index="index" separator=",">
+			(#{uid}, #{id},#{type})
+		</foreach>
+	</insert>
+	
+	<update id="updateTemplate" parameterType="Template">
+		UPDATE template 
+		<set>
+	    	<if test="tName != null and tName != ''">T_NAME = #{tName},</if>
+	    	<if test="tPassword != null and tPassword != ''">T_PASSWORD = #{tPassword},</if>
+	    	<if test="speaker != null">SPEAKER = #{speaker},</if>
+	    	<if test="chairMan != null">CHAIR_MAN = #{chairMan},</if>
+	    	<if test="autoEnd != null and autoEnd != ''">AUTO_END = #{autoEnd},</if>
+	    	<if test="updateTime != null and updateTime != ''">UPDATE_TIME = #{updateTime},</if>
+	    	<if test="duration != null and duration != ''">DURATION = #{duration}</if>
+	  	</set>
+	  	WHERE T_ID = #{tId}
+	</update>
+	
+	<delete id="deleteTemplateUser" parameterType="Integer">
+		DELETE FROM templateuser WHERE TEMPLATE_ID = #{id}
+	</delete>
+	
+	<delete id="deleteTemplate" parameterType="Integer">
+		DELETE FROM template WHERE T_ID = #{id}
+	</delete>
+</mapper>

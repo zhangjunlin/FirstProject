@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.auxing.znhy.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.auxing.znhy.entity.User">
+        <id column="ID" property="id" />
+        <result column="ACCOUNT" property="account" />
+        <result column="PASSWORD" property="password" />
+        <result column="ACTURAL_NAME" property="acturalName" />
+        <result column="JOB_NUMBER" property="jobNumber" />
+        <result column="E164" property="e164" />
+        <result column="USER_TYPE" property="userType" />
+        <result column="MOID" property="moid" />
+        <result column="SEX" property="sex" />
+        <result column="BIRTH" property="birth" />
+        <result column="MOBILE" property="mobile" />
+        <result column="EMAIL" property="email" />
+        <result column="DEPARTMENT" property="department" />
+        <result column="ACCOUNT_TYPE" property="accountType" />
+        <result column="ENABLE" property="enable" />
+         <result column="DOMAIN_ID" property="domainId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID, ACCOUNT, PASSWORD, ACTURAL_NAME, JOB_NUMBER, USER_TYPE,MOID, SEX, BIRTH, MOBILE, EMAIL, DEPARTMENT, ACCOUNT_TYPE, ENABLE,DOMAIN_ID
+    </sql>
+    <select id="selectTotalCount" parameterType="com.auxing.znhy.entity.User"  resultType="Long">
+		SELECT COUNT(1) 
+		FROM USER
+		<where>
+		   <if test="user.acturalName != null and user.acturalName != ''">AND ACTURAL_NAME like concat(concat("%",#{user.acturalName}),"%")</if> 
+           <if test="user.userType != null and user.userType != ''">AND USER_TYPE = #{user.userType}</if> 
+           <if test="user.department != null and user.department != ''">AND DEPARTMENT in(SELECT dep.DEPARTMENT_MOID  from(		
+			
+			SELECT d2.* FROM(
+				SELECT * FROM DEPARTMENT WHERE FIND_IN_SET(PARENT_ID, getChildList(#{user.department}))
+	  			) d2
+			UNION 
+			select d3.* from DEPARTMENT d3 where d3.DEPARTMENT_MOID = #{user.department}
+	  		) dep )</if>    
+		</where>
+	</select>
+	
+    <select id="selectUserPage" parameterType="Map" resultMap="BaseResultMap">
+		SELECT
+			 u.ID, u.ACCOUNT, u.PASSWORD, u.ACTURAL_NAME, u.JOB_NUMBER, u.USER_TYPE,u.MOID, u.SEX, u.BIRTH, u.MOBILE, u.EMAIL, d.DEPARTMENT_NAME as DEPARTMENT, u.ACCOUNT_TYPE, u.ENABLE,u.DOMAIN_ID
+		FROM
+			USER u
+			LEFT JOIN  DEPARTMENT d ON u.department = d.DEPARTMENT_MOID
+			
+		<where>
+		   <if test="user.acturalName != null and user.acturalName != ''">AND u.ACTURAL_NAME like concat(concat("%",#{user.acturalName}),"%")</if> 
+           <if test="user.userType != null and user.userType != ''">AND u.USER_TYPE = #{user.userType}</if> 
+           <if test="user.department != null and user.department != ''">AND u.DEPARTMENT in(SELECT dep.DEPARTMENT_MOID  from(		
+			
+			SELECT d2.* FROM(
+				SELECT * FROM DEPARTMENT WHERE FIND_IN_SET(PARENT_ID, getChildList(#{user.department}))
+	  			) d2
+			UNION 
+			select d3.* from DEPARTMENT d3 where d3.DEPARTMENT_MOID = #{user.department}
+	  		) dep )</if>    
+		</where>
+		
+	</select>
+</mapper>

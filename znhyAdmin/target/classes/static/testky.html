@@ -1,0 +1,101 @@
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script type="text/javascript">
+	function invokeLogin() {
+		$.ajax({
+			type:"get",
+			url:"http://192.168.1.63:8080/znhyAdmin/login/checkLogin",
+			data:{"account":"admin1","password":"keda8888"},
+			xhrFields: {
+				withCredentials: true
+			},
+			dataType:"json",
+			success:function(json){
+				console.info("success返回："+json);
+			}
+		});
+	}
+	
+	function invokeSession() {
+		$.ajax({
+			type:"get",
+			url:"http://192.168.1.67:8080/znhyAdmin/department/selectDepartments",
+			data:{},
+			xhrFields: {
+				withCredentials: true
+			},
+			dataType:"json",
+			success:function(json){
+				console.info("success返回："+json);
+			}
+		});
+	}
+	
+	function invokeSession2() {
+		var ids = "11,22,33,44,55,66";
+		$.ajax({
+			type:"get",
+			url:"http://192.168.1.63:8080/znhyAdmin/role/delRoles",
+			data:{"list":ids},
+			xhrFields: {
+				withCredentials: true
+			},
+			dataType:"json",
+			success:function(json){
+				console.info(json);
+			}
+		});
+	}
+	
+	function testrole() {
+		$.ajax({
+			type:"post",
+			url:"http://192.168.1.63:8080/znhyAdmin/role/saveRoles",
+			data:{"name":"ceshi","sort":0,"des":"fdafdafa"},
+			xhrFields: {
+				withCredentials: true
+			},
+			dataType:"json",
+			success:function(json){
+				console.info(json);
+			}
+		});
+	}
+	
+	//测试调用科达接口
+	function testinterface() {
+		$.ajax({
+			type:"post",
+			url:"http://112.4.82.115/api/v1/vc/confs/1110009/mts",
+			data:{"account_token":"4c7c8e1f68f1b915c0b076edc035b78a"},
+			xhrFields: {
+				withCredentials: true
+			},
+			beforeSend : function(xhr) {
+				//console.info( "adding cookie: SSO_COOKIE_KEY=381baeda-e8d8-4ab3-9a48-c1e10399a563");
+				//xhr.setRequestHeader('Cookie', "SSO_COOKIE_KEY=381baeda-e8d8-4ab3-9a48-c1e10399a563");
+				//xhr.setRequestHeader('Content-Type', "application/x-www-form-urlencoded");
+				//showwd();
+				Cookies.set('Cookie', 'SSO_COOKIE_KEY=381baeda-e8d8-4ab3-9a48-c1e10399a563', { secure: true });
+			},
+			dataType:"json",
+			success:function(json) {
+				console.info(json);
+			}
+		});
+	}
+	
+// 	function showwd() {
+// 		setToken('Cookie', 'SSO_COOKIE_KEY=381baeda-e8d8-4ab3-9a48-c1e10399a563');
+// 	}
+</script>
+<body>
+	<input type="button" value="跨域调用登录接口" onclick="invokeLogin()" />
+	<input type="button" value="跨域验证session问题" onclick="invokeSession()" />
+	<input type="button" value="跨域验证session问题2" onclick="invokeSession2()" />
+	<input type="button" value="测试传参" onclick="testrole()" />
+	<input type="button" value="测试调用接口" onclick="testinterface()" />
+</body>

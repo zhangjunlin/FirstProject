@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.auxing.znhy.mapper.RoleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.auxing.znhy.entity.Role">
+        <id column="ID" property="id" />
+        <result column="NAME" property="name" />
+        <result column="DES" property="des" />
+        <result column="SORT" property="sort" />
+        <result column="TYPE" property="type" />
+        <result column="CREATOR" property="creator" />
+        <result column="CREAT_TIME" property="creatTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="ROLE_ID" property="roleId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID, NAME, DES, SORT, TYPE, CREATOR, CREAT_TIME, UPDATE_TIME, ROLE_ID
+    </sql>
+    <select id="findRolesByUserId" resultMap="BaseResultMap">
+		SELECT * FROM ROLE a 
+		<where>
+			1=1
+			<if test="id != null and id != '' ">
+				AND EXISTS (
+					SELECT 1
+					FROM USERROLE ua
+					LEFT JOIN user u ON u.MOID = ua.USER_ID
+					WHERE ua.ROLE_ID = a.ROLE_ID AND ua.USER_ID = #{id}
+				)
+			</if>
+		</where>
+	</select>
+
+    <update id="updateByRoleId">
+        update role 
+        <set>
+	        <if test="role.name != null and role.name != '' ">
+	            NAME = #{role.name},
+	        </if>
+	        <if test="role.sort != null and role.sort != '' ">
+	            SORT = #{role.sort},
+	        </if>
+	            DES = #{role.des},
+        </set>
+        where 1=1 and ROLE_ID = #{role.roleId}
+    </update>
+</mapper>

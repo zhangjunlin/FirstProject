@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.auxing.znhy.mapper.MeetroomMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.auxing.znhy.entity.Meetroom">
+        <id column="ID" property="id" />
+        <result column="NAME" property="name" />
+        <result column="CAPACITY" property="capacity" />
+        <result column="ACREAGE" property="acreage" />
+        <result column="AREA" property="area" />
+        <result column="TYPE" property="type" />
+        <result column="STATUS" property="status" />
+        <result column="DES" property="des" />
+        <result column="CREATOR" property="creator" />
+        <result column="CREAT_TIME" property="creatTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="DEPARTMENT_ID" property="departmentId" />
+        <result column="USE_BEGIN" property="useBegin" />
+        <result column="USE_END" property="useEnd" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID, NAME, CAPACITY, ACREAGE, AREA, TYPE, STATUS, DES, CREATOR, CREAT_TIME, UPDATE_TIME, DEPARTMENT_ID, USE_BEGIN, USE_END
+    </sql>
+
+    <select id="getFreeMeetRoom" parameterType="String" resultMap="BaseResultMap">
+        select * from meetroom where 1=1 and STATUS = '0' AND DEPARTMENT_ID = #{department} ORDER BY CREAT_TIME
+    </select>
+    
+    <update id="updateStatus" parameterType="Map">
+   		UPDATE meetroom 
+		SET STATUS = 0,
+			USE_BEGIN = NULL,
+			USE_END = NULL
+		WHERE ID = #{id}
+    </update>
+</mapper>

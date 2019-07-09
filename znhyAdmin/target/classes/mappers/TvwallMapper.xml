@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.auxing.znhy.mapper.TvwallMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.auxing.znhy.entity.Tvwall">
+        <id column="ID" property="id" />
+        <result column="NAME" property="name" />
+        <result column="LINE" property="line" />
+        <result column="COL" property="col" />
+        <result column="TELEVISION_ID" property="televisionId" />
+        <result column="CREATOR" property="creator" />
+        <result column="CREAT_TIME" property="creatTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATE_ID" property="createId" />
+        <result column="DEPARTMENT_ID" property="departmentId" />
+        <result column="YLZD3" property="ylzd3" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID, NAME, LINE, COL, TELEVISION_ID, CREATOR, CREAT_TIME, UPDATE_TIME, CREATE_ID, DEPARTMENT_ID, YLZD3
+    </sql>
+
+</mapper>

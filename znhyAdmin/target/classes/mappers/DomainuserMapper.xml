@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.auxing.znhy.mapper.DomainuserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.auxing.znhy.entity.Domainuser">
+        <id column="ID" property="id" />
+        <result column="NAME" property="name" />
+        <result column="MOID" property="moid" />
+        <result column="USERNAME" property="username" />
+        <result column="PASSWORD" property="password" />
+        <result column="ENABLED" property="enabled" />
+        <result column="SUBSRIPTION" property="subsription" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID, NAME, MOID, USERNAME, PASSWORD,ENABLED,SUBSRIPTION
+    </sql>
+		
+	<update id="updateSubsription" parameterType="Map">
+		UPDATE domainuser 
+		SET SUBSRIPTION = #{subsription}
+		WHERE MOID = #{domainId}
+	</update>
+	
+	<update id="updateAllSubsription">
+		UPDATE domainuser 
+		SET SUBSRIPTION = 0
+	</update>
+	
+</mapper>

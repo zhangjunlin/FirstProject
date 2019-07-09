@@ -1,0 +1,11 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.auxing.znhy.common.RedisConfiguration$DataJedisProperties",
+      "name": "",
+      "type": "com.auxing.znhy.common.RedisConfiguration$DataJedisProperties"
+    }
+  ],
+  "properties": []
+}
