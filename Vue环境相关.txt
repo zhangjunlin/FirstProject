@@ -1,17 +1,17 @@
-1£¬Ê×Ñ¡ÏÂÔØNodejs
+1ï¼Œé¦–é€‰ä¸‹è½½Nodejs
 http://nodejs.cn/download
-2£¬°²×°ÌÔ±¦¾µÏñcnpm²¢ÉèÖÃ»·¾³±äÁ¿
+2ï¼Œå®‰è£…æ·˜å®é•œåƒcnpmå¹¶è®¾ç½®ç¯å¢ƒå˜é‡
 npm install -g cnpm --registry=https://registry.npm.taobao.org
-3£¬ÏÂÔØVsCode¿ª·¢¹¤¾ß
-ÂÔ
-4£¬ÏÂ±ßÁĞ³ö¸÷ÖÖÃüÁî£º
-ÅäÖÃ»·¾³±äÁ¿£¬ÔÚpathÖĞÌí¼Ó£ºC:\Program Files\nodejs\node_global
-ĞÂÔö»·¾³±äÁ¿£¬NODE_PATH£ºD:\SofteWare\nodejs\node_global\node_modules
-ÓÃcnmp°²×°vue£ºcnpm install vue -g
-°²×°vueÃüÁîĞĞ¹¤¾ß£ºcnpm install vue-cli -g
+3ï¼Œä¸‹è½½VsCodeå¼€å‘å·¥å…·
+ç•¥
+4ï¼Œä¸‹è¾¹åˆ—å‡ºå„ç§å‘½ä»¤ï¼š
+é…ç½®ç¯å¢ƒå˜é‡ï¼Œåœ¨pathä¸­æ·»åŠ ï¼šC:\Program Files\nodejs\node_global
+æ–°å¢ç¯å¢ƒå˜é‡ï¼ŒNODE_PATHï¼šD:\SofteWare\nodejs\node_global\node_modules
+ç”¨cnmpå®‰è£…vueï¼šcnpm install vue -g
+å®‰è£…vueå‘½ä»¤è¡Œå·¥å…·ï¼šcnpm install vue-cli -g
 
-³õÊ¼»¯Ò»¸öÏîÄ¿£¬½øÈëxxÅÌ£º
+åˆå§‹åŒ–ä¸€ä¸ªé¡¹ç›®ï¼Œè¿›å…¥xxç›˜ï¼š
 vue init webpack my-project
-npm»òcnpm install
-npm run dev »ò cnpm run dev
+npmæˆ–cnpm install
+npm run dev æˆ– cnpm run dev
 
